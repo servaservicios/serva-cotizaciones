@@ -147,7 +147,6 @@ export default function TablaView({ cotizaciones, onRowClick }: Props) {
                   );
                 })}
                 <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Responsable</th>
-                <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">%</th>
                 <th className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Sheets</th>
               </tr>
             </thead>
@@ -176,14 +175,6 @@ export default function TablaView({ cotizaciones, onRowClick }: Props) {
                   </td>
                   <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">{formatDate(c.fechaSolicitud)}</td>
                   <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap">{c.responsable.split(" ")[0]}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-10 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-serva-green rounded-full" style={{ width: `${c.probabilidadCierre}%` }} />
-                      </div>
-                      <span className="text-xs text-gray-400">{c.probabilidadCierre}%</span>
-                    </div>
-                  </td>
                   <td className="px-4 py-3 text-center">
                     {c.enlaceSheets ? (
                       <a href={c.enlaceSheets} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}

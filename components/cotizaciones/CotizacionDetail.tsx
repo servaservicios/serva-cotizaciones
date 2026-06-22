@@ -79,12 +79,6 @@ export default function CotizacionDetail({ cotizacion, onEdit, onClose }: Props)
         <p className="text-3xl font-black text-serva-green-dark">
           {cotizacion.monto > 0 ? formatCurrency(cotizacion.monto) : "Sin definir"}
         </p>
-        <div className="flex items-center gap-3 mt-3">
-          <div className="flex-1 h-2 bg-serva-green/20 rounded-full overflow-hidden">
-            <div className="h-full bg-serva-green rounded-full" style={{ width: `${cotizacion.probabilidadCierre}%` }} />
-          </div>
-          <span className="text-sm font-bold text-serva-green">{cotizacion.probabilidadCierre}%</span>
-        </div>
       </div>
 
       {/* ── Quick move ─────────────────────────────────── */}

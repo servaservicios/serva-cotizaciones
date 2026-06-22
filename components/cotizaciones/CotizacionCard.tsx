@@ -96,12 +96,6 @@ export default function CotizacionCard({ cotizacion, onClick }: Props) {
           <Calendar size={11} />
           <span>{formatDate(cotizacion.fechaSolicitud)}</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="text-[11px] text-gray-400">{cotizacion.probabilidadCierre}%</span>
-          <div className="w-10 h-1 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full bg-serva-green rounded-full" style={{ width: `${cotizacion.probabilidadCierre}%` }} />
-          </div>
-        </div>
       </div>
 
       {/* Próxima acción */}
