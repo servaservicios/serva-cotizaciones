@@ -32,11 +32,11 @@ export default function DashboardView({ cotizaciones }: Props) {
       .sort((a, b) => b[1] - a[1]).slice(0, 8)
       .map(([name, value]) => ({ name: name.length > 18 ? name.slice(0, 16) + "…" : name, value }));
 
-    const servicioMap: Record<string, number> = {};
-    cotizaciones.forEach((c) => { servicioMap[c.nombreServicio] = (servicioMap[c.nombreServicio] || 0) + 1; });
-    const topServicios = Object.entries(servicioMap)
-      .sort((a, b) => b[1] - a[1]).slice(0, 8)
-      .map(([name, value]) => ({ name: name.length > 20 ? name.slice(0, 18) + "…" : name, value }));
+    const categoriaMap: Record<string, number> = {};
+    cotizaciones.forEach((c) => { categoriaMap[c.categoria] = (categoriaMap[c.categoria] || 0) + 1; });
+    const topServicios = Object.entries(categoriaMap)
+      .sort((a, b) => b[1] - a[1]).slice(0, 11)
+      .map(([name, value]) => ({ name, value }));
 
     const proveedorMap: Record<string, number> = {};
     cotizaciones.forEach((c) => { proveedorMap[c.proveedor] = (proveedorMap[c.proveedor] || 0) + 1; });
@@ -143,7 +143,7 @@ export default function DashboardView({ cotizaciones }: Props) {
 
       {/* ── Top Servicios ────────────────────────────── */}
       <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-        <h3 className="text-sm font-bold text-gray-700 mb-3">Servicios más Cotizados</h3>
+        <h3 className="text-sm font-bold text-gray-700 mb-3">Cotizaciones por Categoría</h3>
         <ResponsiveContainer width="100%" height={Math.max(180, s.topServicios.length * 28)}>
           <BarChart data={s.topServicios} layout="vertical" margin={{ left: 0, right: 12, top: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f0f0f0" />
@@ -155,7 +155,7 @@ export default function DashboardView({ cotizaciones }: Props) {
             <YAxis
               type="category" dataKey="name"
               tick={{ fontSize: 11, fill: "#6b7280" }}
-              axisLine={false} tickLine={false} width={140}
+              axisLine={false} tickLine={false} width={160}
             />
             <Tooltip formatter={(v: number) => [`${v} cotizaciones`, ""]} />
             <Bar dataKey="value" radius={[0, 4, 4, 0]}>
