@@ -37,6 +37,7 @@ export default function CotizacionForm({ cotizacion, onClose }: Props) {
   const [form, setForm] = useState(cotizacion ?? defaultForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const set = (field: string, value: string | number) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -61,13 +62,20 @@ export default function CotizacionForm({ cotizacion, onClose }: Props) {
       return;
     }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 300));
+    setSubmitError(null);
+
+    let result: { error: string | null };
     if (cotizacion) {
-      updateCotizacion(cotizacion.id, form);
+      result = await updateCotizacion(cotizacion.id, form);
     } else {
-      addCotizacion(form);
+      result = await addCotizacion(form);
     }
+
     setLoading(false);
+    if (result.error) {
+      setSubmitError(result.error);
+      return;
+    }
     onClose();
   };
 
@@ -86,6 +94,13 @@ export default function CotizacionForm({ cotizacion, onClose }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Error de guardado */}
+      {submitError && (
+        <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">
+          {submitError}
+        </div>
+      )}
+
       {/* Sección 1: Información del Servicio */}
       <div>
         <h3 className="text-xs font-bold text-serva-green uppercase tracking-widest mb-3 flex items-center gap-2">
