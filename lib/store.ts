@@ -9,6 +9,7 @@ import {
   dbToCotizacion,
 } from "./supabaseService";
 import { getSupabaseClient, isSupabaseConfigured } from "./supabase";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 export type RealtimeStatus = "connected" | "connecting" | "disconnected";
 
@@ -39,7 +40,6 @@ export const useCotizacionStore = create<CotizacionStore>((set, get) => ({
 
   clearError: () => set({ error: null }),
 
-  // ── Cargar desde Supabase ──────────────────────────────────────────────────
   fetchCotizaciones: async () => {
     set({ loading: true, error: null });
     const { data, error } = await sbFetch();
@@ -50,7 +50,6 @@ export const useCotizacionStore = create<CotizacionStore>((set, get) => ({
     set({ cotizaciones: data, loading: false, initialized: true });
   },
 
-  // ── Crear ──────────────────────────────────────────────────────────────────
   addCotizacion: async (input) => {
     const { cotizaciones } = get();
     const { data, error } = await sbCreate(input, cotizaciones.length);
@@ -64,13 +63,10 @@ export const useCotizacionStore = create<CotizacionStore>((set, get) => ({
     return { error: null };
   },
 
-  // ── Actualizar ─────────────────────────────────────────────────────────────
   updateCotizacion: async (id, fields) => {
     set((state) => ({
       cotizaciones: state.cotizaciones.map((c) =>
-        c.id === id
-          ? { ...c, ...fields, actualizadoEn: new Date().toISOString() }
-          : c
+        c.id === id ? { ...c, ...fields, actualizadoEn: new Date().toISOString() } : c
       ),
     }));
     const { error } = await sbUpdate(id, fields);
@@ -82,7 +78,6 @@ export const useCotizacionStore = create<CotizacionStore>((set, get) => ({
     return { error: null };
   },
 
-  // ── Eliminar ───────────────────────────────────────────────────────────────
   deleteCotizacion: async (id) => {
     set((state) => ({
       cotizaciones: state.cotizaciones.filter((c) => c.id !== id),
@@ -96,13 +91,10 @@ export const useCotizacionStore = create<CotizacionStore>((set, get) => ({
     return { error: null };
   },
 
-  // ── Mover estado (Kanban) ──────────────────────────────────────────────────
   moverEstado: async (id, nuevoEstado) => {
     set((state) => ({
       cotizaciones: state.cotizaciones.map((c) =>
-        c.id === id
-          ? { ...c, estado: nuevoEstado, actualizadoEn: new Date().toISOString() }
-          : c
+        c.id === id ? { ...c, estado: nuevoEstado, actualizadoEn: new Date().toISOString() } : c
       ),
     }));
     const { error } = await sbMover(id, nuevoEstado);
@@ -112,7 +104,6 @@ export const useCotizacionStore = create<CotizacionStore>((set, get) => ({
     }
   },
 
-  // ── Realtime subscription ──────────────────────────────────────────────────
   subscribeToRealtime: () => {
     if (!isSupabaseConfigured) return () => {};
     const supabase = getSupabaseClient()!;
@@ -121,11 +112,11 @@ export const useCotizacionStore = create<CotizacionStore>((set, get) => ({
 
     const channel = supabase
       .channel("cotizaciones-realtime")
-      .on(
+      .on<Record<string, unknown>>(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "cotizaciones" },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (payload: any) => {
+        (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
+          if (!payload.new || !("id" in payload.new)) return;
           const nueva = dbToCotizacion(payload.new);
           set((state) => {
             if (state.cotizaciones.some((c) => c.id === nueva.id)) return state;
@@ -133,25 +124,23 @@ export const useCotizacionStore = create<CotizacionStore>((set, get) => ({
           });
         }
       )
-      .on(
+      .on<Record<string, unknown>>(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "cotizaciones" },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (payload: any) => {
+        (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
+          if (!payload.new || !("id" in payload.new)) return;
           const updated = dbToCotizacion(payload.new);
           set((state) => ({
-            cotizaciones: state.cotizaciones.map((c) =>
-              c.id === updated.id ? updated : c
-            ),
+            cotizaciones: state.cotizaciones.map((c) => c.id === updated.id ? updated : c),
           }));
         }
       )
-      .on(
+      .on<Record<string, unknown>>(
         "postgres_changes",
         { event: "DELETE", schema: "public", table: "cotizaciones" },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (payload: any) => {
-          const deletedId = (payload.old as { id: string }).id;
+        (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
+          if (!payload.old || !("id" in payload.old)) return;
+          const deletedId = payload.old.id as string;
           set((state) => ({
             cotizaciones: state.cotizaciones.filter((c) => c.id !== deletedId),
           }));
