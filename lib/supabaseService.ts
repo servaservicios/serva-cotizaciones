@@ -5,29 +5,28 @@ import { cotizacionesEjemplo } from "./data";
 
 // ── Mappers ──────────────────────────────────────────────────────────────────
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function dbToCotizacion(row: any): Cotizacion {
+export function dbToCotizacion(row: Record<string, unknown>): Cotizacion {
   return {
-    id: row.id,
-    numeroCotizacion: row.numero_cotizacion,
-    nombreServicio: row.nombre_servicio,
-    cliente: row.cliente,
-    proveedor: row.proveedor,
+    id: row.id as string,
+    numeroCotizacion: row.numero_cotizacion as string,
+    nombreServicio: row.nombre_servicio as string,
+    cliente: row.cliente as string,
+    proveedor: row.proveedor as string,
     monto: Number(row.monto),
-    fechaSolicitud: row.fecha_solicitud ?? "",
-    fechaEnvio: row.fecha_envio ?? "",
-    fechaCierreEstimada: row.fecha_cierre_estimada ?? "",
-    responsable: row.responsable,
+    fechaSolicitud: (row.fecha_solicitud as string) ?? "",
+    fechaEnvio: (row.fecha_envio as string) ?? "",
+    fechaCierreEstimada: (row.fecha_cierre_estimada as string) ?? "",
+    responsable: row.responsable as string,
     estado: row.estado as EstadoCotizacion,
-    proximaAccion: row.proxima_accion ?? "",
-    notas: row.notas ?? "",
-    enlaceSheets: row.enlace_sheets ?? "",
-    categoria: row.categoria,
+    proximaAccion: (row.proxima_accion as string) ?? "",
+    notas: (row.notas as string) ?? "",
+    enlaceSheets: (row.enlace_sheets as string) ?? "",
+    categoria: row.categoria as string,
     prioridad: row.prioridad as "Alta" | "Media" | "Baja",
     probabilidadCierre: Number(row.probabilidad_cierre),
-    motivoRechazo: row.motivo_rechazo ?? "",
-    creadoEn: row.creado_en,
-    actualizadoEn: row.actualizado_en,
+    motivoRechazo: (row.motivo_rechazo as string) ?? "",
+    creadoEn: row.creado_en as string,
+    actualizadoEn: row.actualizado_en as string,
   };
 }
 
@@ -58,7 +57,6 @@ function cotizacionToDb(c: Partial<Cotizacion> & { id?: string }) {
 
 // ── Service functions ─────────────────────────────────────────────────────────
 
-/** Carga todas las cotizaciones. Si Supabase no está configurado, retorna datos de ejemplo. */
 export async function fetchCotizaciones(): Promise<{ data: Cotizacion[]; error: string | null }> {
   if (!isSupabaseConfigured) {
     return { data: cotizacionesEjemplo, error: null };
@@ -70,11 +68,9 @@ export async function fetchCotizaciones(): Promise<{ data: Cotizacion[]; error: 
     .order("creado_en", { ascending: false });
 
   if (error) return { data: [], error: error.message };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return { data: (data as any[]).map(dbToCotizacion), error: null };
+  return { data: (data as Record<string, unknown>[]).map(dbToCotizacion), error: null };
 }
 
-/** Crea una nueva cotización en Supabase y la retorna con id y número generados. */
 export async function createCotizacion(
   input: Omit<Cotizacion, "id" | "numeroCotizacion" | "creadoEn" | "actualizadoEn">,
   totalActual: number
@@ -100,11 +96,9 @@ export async function createCotizacion(
     .single();
 
   if (error) return { data: null, error: error.message };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return { data: dbToCotizacion(data as any), error: null };
+  return { data: dbToCotizacion(data as Record<string, unknown>), error: null };
 }
 
-/** Actualiza campos de una cotización existente. */
 export async function updateCotizacion(
   id: string,
   fields: Partial<Cotizacion>
@@ -121,7 +115,6 @@ export async function updateCotizacion(
   return { error: error ? error.message : null };
 }
 
-/** Elimina una cotización por id. */
 export async function deleteCotizacion(id: string): Promise<{ error: string | null }> {
   if (!isSupabaseConfigured) return { error: null };
 
@@ -130,7 +123,6 @@ export async function deleteCotizacion(id: string): Promise<{ error: string | nu
   return { error: error ? error.message : null };
 }
 
-/** Cambia el estado (columna Kanban) de una cotización. */
 export async function moverEstado(
   id: string,
   nuevoEstado: EstadoCotizacion
