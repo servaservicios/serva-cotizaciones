@@ -49,7 +49,7 @@ export default function CotizacionForm({ cotizacion, onClose }: Props) {
     if (!form.nombreServicio.trim()) errs.nombreServicio = "Requerido";
     if (!form.cliente.trim()) errs.cliente = "Requerido";
     if (!form.proveedor.trim()) errs.proveedor = "Requerido";
-    if (!form.monto || form.monto <= 0) errs.monto = "Ingresa un monto válido";
+    if (form.monto < 0) errs.monto = "El monto no puede ser negativo";
     if (!form.fechaSolicitud) errs.fechaSolicitud = "Requerido";
     return errs;
   };
