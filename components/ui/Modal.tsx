@@ -11,55 +11,63 @@ interface ModalProps {
   size?: "sm" | "md" | "lg" | "xl";
 }
 
-const sizes = {
-  sm: "max-w-md",
-  md: "max-w-xl",
-  lg: "max-w-2xl",
-  xl: "max-w-4xl",
+const sizes: Record<string, string> = {
+  sm: "sm:max-w-md",
+  md: "sm:max-w-xl",
+  lg: "sm:max-w-2xl",
+  xl: "sm:max-w-4xl",
 };
 
 export default function Modal({ isOpen, onClose, title, children, size = "lg" }: ModalProps) {
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     if (isOpen) document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
   }, [isOpen, onClose]);
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = isOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        onClick={onClose}
-      />
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+
+      {/* Sheet — full bottom sheet on mobile, centered modal on desktop */}
       <div
         className={cn(
-          "relative w-full bg-white rounded-2xl shadow-2xl max-h-[90vh] flex flex-col",
+          "relative w-full bg-white flex flex-col sheet-enter",
+          /* Mobile: bottom sheet */
+          "rounded-t-2xl max-h-[92dvh]",
+          /* Desktop: centered modal */
+          "sm:rounded-2xl sm:shadow-2xl sm:mx-4 sm:max-h-[90vh]",
           sizes[size]
         )}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-700 text-gray-900 font-semibold">{title}</h2>
+        {/* Drag handle (mobile only) */}
+        <div className="sm:hidden flex justify-center pt-3 pb-1 flex-shrink-0">
+          <div className="w-10 h-1 rounded-full bg-gray-200" />
+        </div>
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 flex-shrink-0">
+          <h2 className="text-base font-bold text-gray-900">{title}</h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-2 rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors tap-target flex items-center justify-center"
           >
             <X size={18} />
           </button>
         </div>
-        <div className="overflow-y-auto flex-1 px-6 py-4">{children}</div>
+
+        {/* Content */}
+        <div className="overflow-y-auto flex-1 px-5 py-4 momentum-scroll">
+          {children}
+        </div>
       </div>
     </div>
   );

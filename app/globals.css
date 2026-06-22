@@ -9,70 +9,112 @@
   --serva-green-dark: #1F5C3A;
   --serva-green-light: #3DA066;
   --serva-green-pale: #E8F5EE;
+  --bottom-nav-h: 64px;
 }
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  /* Prevent font scaling on orientation change */
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   font-family: 'Montserrat', system-ui, sans-serif;
   background-color: #F5F7F5;
   color: #1a1a1a;
+  /* Prevent horizontal scroll on mobile */
+  overflow-x: hidden;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Safe area support for notched phones */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-::-webkit-scrollbar-thumb {
-  background: #2D7A4F44;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #2D7A4F;
+.pb-safe {
+  padding-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom, 8px));
 }
 
-/* Kanban column scroll */
-.kanban-column {
+/* Scrollbar styling — desktop only */
+@media (min-width: 768px) {
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #f1f1f1; }
+  ::-webkit-scrollbar-thumb { background: #2D7A4F44; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #2D7A4F; }
+}
+
+/* Hide scrollbar on mobile horizontal scroll */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar { display: none; }
+
+/* Kanban scroll */
+.kanban-col-scroll {
   overflow-y: auto;
-  max-height: calc(100vh - 220px);
+  -webkit-overflow-scrolling: touch;
+}
+@media (min-width: 768px) {
+  .kanban-col-scroll { max-height: calc(100vh - 220px); }
+}
+@media (max-width: 767px) {
+  .kanban-col-scroll { max-height: calc(100dvh - 280px); }
 }
 
-/* Card drag */
-.dragging {
-  opacity: 0.5;
-  transform: rotate(2deg);
-}
-
-/* Transitions */
+/* Card animation */
 .card-enter {
-  animation: cardIn 0.2s ease-out;
+  animation: cardIn 0.18s ease-out;
 }
-
 @keyframes cardIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Table hover */
-.table-row-hover:hover {
-  background-color: #E8F5EE;
+.table-row-hover:hover { background-color: #E8F5EE; }
+
+/* Bottom nav blur */
+.bottom-nav {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-/* Print styles */
-@media print {
-  .no-print {
-    display: none !important;
-  }
+/* Touch-friendly minimum tap target */
+.tap-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Smooth momentum scroll */
+.momentum-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* FAB shadow */
+.fab-shadow {
+  box-shadow: 0 4px 20px rgba(45, 122, 79, 0.4);
+}
+
+/* Bottom sheet slide up */
+.sheet-enter {
+  animation: sheetUp 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* Input focus ring for mobile */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+}
+
+/* Prevent double-tap zoom on buttons */
+button, a {
+  touch-action: manipulation;
 }
