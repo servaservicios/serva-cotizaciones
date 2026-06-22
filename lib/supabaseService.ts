@@ -3,10 +3,33 @@ import { getSupabaseClient, isSupabaseConfigured } from "./supabase";
 import { generateId, generateNumeroCotizacion } from "./utils";
 import { cotizacionesEjemplo } from "./data";
 
+// ── Row type from Supabase ────────────────────────────────────────────────────
+type DbRow = {
+  id: string;
+  numero_cotizacion: string;
+  nombre_servicio: string;
+  cliente: string;
+  proveedor: string;
+  monto: number | string;
+  fecha_solicitud: string | null;
+  fecha_envio: string | null;
+  fecha_cierre_estimada: string | null;
+  responsable: string;
+  estado: string;
+  proxima_accion: string | null;
+  notas: string | null;
+  enlace_sheets: string | null;
+  categoria: string;
+  prioridad: string;
+  probabilidad_cierre: number | string;
+  motivo_rechazo: string | null;
+  creado_en: string;
+  actualizado_en: string;
+};
+
 // ── Mappers ──────────────────────────────────────────────────────────────────
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function dbToCotizacion(row: any): Cotizacion {
+function dbToCotizacion(row: DbRow): Cotizacion {
   return {
     id: row.id,
     numeroCotizacion: row.numero_cotizacion,
@@ -31,7 +54,7 @@ function dbToCotizacion(row: any): Cotizacion {
   };
 }
 
-function cotizacionToDb(c: Partial<Cotizacion> & { id?: string }) {
+function cotizacionToDb(c: Partial<Cotizacion> & { id?: string }): Record<string, unknown> {
   const row: Record<string, unknown> = {};
   if (c.id !== undefined) row.id = c.id;
   if (c.numeroCotizacion !== undefined) row.numero_cotizacion = c.numeroCotizacion;
@@ -70,8 +93,7 @@ export async function fetchCotizaciones(): Promise<{ data: Cotizacion[]; error: 
     .order("creado_en", { ascending: false });
 
   if (error) return { data: [], error: error.message };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return { data: (data as any[]).map(dbToCotizacion), error: null };
+  return { data: (data as DbRow[]).map(dbToCotizacion), error: null };
 }
 
 /** Crea una nueva cotización en Supabase y la retorna con id y número generados. */
@@ -100,8 +122,7 @@ export async function createCotizacion(
     .single();
 
   if (error) return { data: null, error: error.message };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return { data: dbToCotizacion(data as any), error: null };
+  return { data: dbToCotizacion(data as DbRow), error: null };
 }
 
 /** Actualiza campos de una cotización existente. */
