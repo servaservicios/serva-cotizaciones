@@ -78,90 +78,17 @@ export default function DashboardView({ cotizaciones }: Props) {
         <KpiCard icon={<BarChart2 size={18} />}   label="Ticket Promedio"  value={formatCurrency(s.ticketProm)}   color="teal"   wide />
       </div>
 
-      {/* ── Pie + Proveedores ────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-          <h3 className="text-sm font-bold text-gray-700 mb-3">Distribución</h3>
-          <ResponsiveContainer width="100%" height={180}>
-            <PieChart>
-              <Pie data={s.pieData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={3} dataKey="value">
-                {s.pieData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-              </Pie>
-              <Tooltip formatter={(v) => [`${v} cots.`, ""]} />
-              <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11 }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-          <h3 className="text-sm font-bold text-gray-700 mb-3">Top Proveedores</h3>
-          <div className="space-y-2.5">
-            {s.topProveedores.map((p, i) => (
-              <div key={p.name} className="flex items-center gap-2.5">
-                <span className="text-xs font-bold text-gray-300 w-4 text-right flex-shrink-0">{i + 1}</span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-xs font-semibold text-gray-700 truncate">{p.name}</span>
-                    <span className="text-xs font-bold text-serva-green ml-1 flex-shrink-0">{p.value}</span>
-                  </div>
-                  <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-serva-green rounded-full"
-                      style={{ width: `${(p.value / Math.max(...s.topProveedores.map((x) => x.value))) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-            {s.topProveedores.length === 0 && <p className="text-sm text-gray-400 text-center py-4">Sin datos</p>}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Top Clientes ─────────────────────────────── */}
+      {/* ── Pie ────────────────────────── */}
       <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-        <h3 className="text-sm font-bold text-gray-700 mb-3">Top Clientes por Monto</h3>
-        <ResponsiveContainer width="100%" height={Math.max(180, s.topClientes.length * 28)}>
-          <BarChart data={s.topClientes} layout="vertical" margin={{ left: 0, right: 12, top: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f0f0f0" />
-            <XAxis
-              type="number"
-              tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
-              tick={{ fontSize: 10, fill: "#9ca3af" }}
-              axisLine={false} tickLine={false}
-            />
-            <YAxis
-              type="category" dataKey="name"
-              tick={{ fontSize: 11, fill: "#6b7280" }}
-              axisLine={false} tickLine={false} width={120}
-            />
-            <Tooltip formatter={(v: number) => [formatCurrency(v), "Monto"]} />
-            <Bar dataKey="value" fill="#2D7A4F" radius={[0, 4, 4, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* ── Top Servicios ────────────────────────────── */}
-      <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-        <h3 className="text-sm font-bold text-gray-700 mb-3">Cotizaciones por Categoría</h3>
-        <ResponsiveContainer width="100%" height={Math.max(180, s.topServicios.length * 28)}>
-          <BarChart data={s.topServicios} layout="vertical" margin={{ left: 0, right: 12, top: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f0f0f0" />
-            <XAxis
-              type="number" allowDecimals={false}
-              tick={{ fontSize: 10, fill: "#9ca3af" }}
-              axisLine={false} tickLine={false}
-            />
-            <YAxis
-              type="category" dataKey="name"
-              tick={{ fontSize: 11, fill: "#6b7280" }}
-              axisLine={false} tickLine={false} width={160}
-            />
-            <Tooltip formatter={(v: number) => [`${v} cotizaciones`, ""]} />
-            <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-              {s.topServicios.map((_, i) => <Cell key={i} fill={BAR_COLORS[i % BAR_COLORS.length]} />)}
-            </Bar>
-          </BarChart>
+        <h3 className="text-sm font-bold text-gray-700 mb-3">Distribución</h3>
+        <ResponsiveContainer width="100%" height={180}>
+          <PieChart>
+            <Pie data={s.pieData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={3} dataKey="value">
+              {s.pieData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+            </Pie>
+            <Tooltip formatter={(v) => [`${v} cots.`, ""]} />
+            <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11 }} />
+          </PieChart>
         </ResponsiveContainer>
       </div>
 

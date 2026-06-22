@@ -192,24 +192,6 @@ export default function CotizacionForm({ cotizacion, onClose }: Props) {
             {errors.monto && <p className="text-xs text-red-500 mt-1">{errors.monto}</p>}
           </div>
 
-          {/* Probabilidad */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <Label>Probabilidad de cierre</Label>
-              <span className="text-sm font-bold text-serva-green">{form.probabilidadCierre}%</span>
-            </div>
-            <input
-              type="range"
-              min="0" max="100"
-              value={form.probabilidadCierre}
-              onChange={(e) => set("probabilidadCierre", parseInt(e.target.value))}
-              className="w-full h-2 accent-serva-green rounded-full"
-            />
-            <div className="flex justify-between text-[10px] text-gray-300 mt-1">
-              <span>0%</span><span>50%</span><span>100%</span>
-            </div>
-          </div>
-
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>Fecha de solicitud *</Label>
