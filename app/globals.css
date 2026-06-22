@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --serva-green: #2D7A4F;
+  --serva-green-dark: #1F5C3A;
+  --serva-green-light: #3DA066;
+  --serva-green-pale: #E8F5EE;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat', system-ui, sans-serif;
+  background-color: #F5F7F5;
+  color: #1a1a1a;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #2D7A4F44;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2D7A4F;
+}
+
+/* Kanban column scroll */
+.kanban-column {
+  overflow-y: auto;
+  max-height: calc(100vh - 220px);
+}
+
+/* Card drag */
+.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+}
+
+/* Transitions */
+.card-enter {
+  animation: cardIn 0.2s ease-out;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Table hover */
+.table-row-hover:hover {
+  background-color: #E8F5EE;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
