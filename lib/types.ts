@@ -53,23 +53,20 @@ export const ESTADOS: Record<EstadoCotizacion, { label: string; color: string; b
 };
 
 export const CATEGORIAS = [
-  "Limpieza",
-  "Mantenimiento",
-  "Seguridad",
-  "Jardinería",
-  "Fumigación",
-  "Electricidad",
+  "Eléctrico",
+  "Instalación",
   "Plomería",
-  "Pintura",
-  "Reparaciones",
-  "Consultoría",
-  "Otros",
+  "Mudanzas",
+  "Fumigación",
+  "Limpieza General",
+  "Limpieza Profunda",
+  "Limpieza Post-Construcción",
+  "Limpieza Muebles",
+  "Limpieza Trampa de Grasa",
+  "Limpieza Fosa Séptica",
 ];
 
 export const RESPONSABLES = [
   "Diego Rodríguez",
-  "Ana García",
-  "Carlos López",
-  "María Hernández",
-  "Jorge Martínez",
+  "Patricio Blanco",
 ];

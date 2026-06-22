@@ -149,7 +149,7 @@ export default function CotizacionForm({ cotizacion, onClose }: Props) {
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
-            label="Monto cotizado (MXN) *"
+            label="Monto cotizado (MXN) SIN IVA *"
             type="number"
             value={form.monto || ""}
             onChange={(e) => set("monto", parseFloat(e.target.value) || 0)}
@@ -187,12 +187,6 @@ export default function CotizacionForm({ cotizacion, onClose }: Props) {
             type="date"
             value={form.fechaEnvio}
             onChange={(e) => set("fechaEnvio", e.target.value)}
-          />
-          <Input
-            label="Fecha estimada de cierre"
-            type="date"
-            value={form.fechaCierreEstimada}
-            onChange={(e) => set("fechaCierreEstimada", e.target.value)}
           />
         </div>
       </div>
