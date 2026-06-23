@@ -16,7 +16,10 @@ export function formatCurrency(amount: number): string {
 
 export function formatDate(dateString: string): string {
   if (!dateString) return "—";
-  const date = new Date(dateString + "T00:00:00");
+  // Avoid appending T00:00:00 to strings that already have a time component
+  const normalized = dateString.includes("T") ? dateString : dateString + "T00:00:00";
+  const date = new Date(normalized);
+  if (isNaN(date.getTime())) return "—";
   return new Intl.DateTimeFormat("es-MX", {
     day: "2-digit",
     month: "short",
