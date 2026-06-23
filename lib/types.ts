@@ -70,3 +70,12 @@ export const RESPONSABLES = [
   "Diego Rodríguez",
   "Patricio Blanco",
 ];
+
+export interface Cliente {
+  id: string;
+  nombre: string;
+  telefono: string;
+  fechaSeguimiento: string; // ISO date string YYYY-MM-DD
+  creadoEn: string;
+  actualizadoEn: string;
+}

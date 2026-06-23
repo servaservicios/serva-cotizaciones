@@ -6,7 +6,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from "recharts";
-import { Clock, Send, CheckCircle, XCircle, DollarSign, TrendingUp, Percent, BarChart2 } from "lucide-react";
+import { Clock, Send, CheckCircle, XCircle, DollarSign, TrendingUp } from "lucide-react";
 
 interface Props { cotizaciones: Cotizacion[]; }
 
@@ -71,11 +71,9 @@ export default function DashboardView({ cotizaciones }: Props) {
       </div>
 
       {/* ── KPIs montos ──────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <KpiCard icon={<DollarSign size={18} />}  label="Monto Total"      value={formatCurrency(s.montoTotal)}    color="green"  wide />
-        <KpiCard icon={<TrendingUp size={18} />}  label="Monto Aprobado"   value={formatCurrency(s.montoAprobado)} color="emerald" wide />
-        <KpiCard icon={<Percent size={18} />}     label="Conversión"       value={`${s.tasaConv}%`}                color="purple" wide />
-        <KpiCard icon={<BarChart2 size={18} />}   label="Ticket Promedio"  value={formatCurrency(s.ticketProm)}   color="teal"   wide />
+      <div className="grid grid-cols-2 gap-3">
+        <KpiCard icon={<DollarSign size={18} />}  label="Monto Total"    value={formatCurrency(s.montoTotal)}    color="green"  wide />
+        <KpiCard icon={<TrendingUp size={18} />}  label="Monto Aprobado" value={formatCurrency(s.montoAprobado)} color="emerald" wide />
       </div>
 
       {/* ── Pie ────────────────────────── */}

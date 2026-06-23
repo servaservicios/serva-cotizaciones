@@ -2,18 +2,20 @@
 import { useState, useMemo, useEffect } from "react";
 import { useCotizacionStore } from "@/lib/store";
 import { isSupabaseConfigured } from "@/lib/supabase";
-import { Cotizacion } from "@/lib/types";
+import { Cotizacion, Cliente } from "@/lib/types";
+import { fetchClientes } from "@/lib/clientesService";
 import Navbar from "@/components/layout/Navbar";
 import Toolbar from "@/components/layout/Toolbar";
 import KanbanBoard from "@/components/kanban/KanbanBoard";
 import TablaView from "@/components/tabla/TablaView";
 import DashboardView from "@/components/dashboard/DashboardView";
+import ClientesView, { clientesBadgeCount } from "@/components/clientes/ClientesView";
 import Modal from "@/components/ui/Modal";
 import CotizacionForm from "@/components/cotizaciones/CotizacionForm";
 import CotizacionDetail from "@/components/cotizaciones/CotizacionDetail";
 import { AlertTriangle, RefreshCw, Loader2, Database, WifiOff, Plus } from "lucide-react";
 
-type View = "dashboard" | "kanban" | "tabla";
+type View = "dashboard" | "kanban" | "tabla" | "clientes";
 
 interface FilterState {
   search: string;
@@ -36,12 +38,17 @@ export default function Home() {
   const [modalCreate, setModalCreate] = useState(false);
   const [selectedCard, setSelectedCard] = useState<Cotizacion | null>(null);
   const [editingCard, setEditingCard] = useState<Cotizacion | null>(null);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
 
   useEffect(() => {
     if (!initialized) fetchCotizaciones();
     const unsubscribe = subscribeToRealtime();
     return () => unsubscribe();
   // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    fetchClientes().then(({ data }) => setClientes(data));
   }, []);
 
   const filtered = useMemo(() => {
@@ -60,6 +67,8 @@ export default function Home() {
       return true;
     });
   }, [cotizaciones, filters]);
+
+  const badge = useMemo(() => clientesBadgeCount(clientes), [clientes]);
 
   const handleCardClick = (c: Cotizacion) => setSelectedCard(c);
   const handleEdit = () => { setEditingCard(selectedCard); setSelectedCard(null); };
@@ -102,7 +111,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar activeView={view} onViewChange={setView} />
+      <Navbar activeView={view} onViewChange={setView} clientesBadge={badge} />
 
       {/* Banner: modo local */}
       {!isSupabaseConfigured && (
@@ -128,8 +137,8 @@ export default function Home() {
         </div>
       )}
 
-      {/* Toolbar — no en dashboard */}
-      {view !== "dashboard" && (
+      {/* Toolbar — solo en vistas de cotizaciones */}
+      {(view === "kanban" || view === "tabla") && (
         <Toolbar filters={filters} onFilterChange={setFilters} total={filtered.length} />
       )}
 
@@ -176,26 +185,42 @@ export default function Home() {
             <TablaView cotizaciones={filtered} onRowClick={handleCardClick} />
           </>
         )}
+
+        {view === "clientes" && (
+          <>
+            <div className="flex items-center justify-between mb-3 sm:mb-5">
+              <div>
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900">Clientes</h1>
+                <p className="hidden sm:block text-sm text-gray-500 mt-0.5">Prospectos y recordatorios de seguimiento</p>
+              </div>
+            </div>
+            <ClientesView />
+          </>
+        )}
       </main>
 
-      {/* ── FAB móvil ─────────────────────────────────── */}
-      <button
-        onClick={() => setModalCreate(true)}
-        className="sm:hidden fixed z-40 w-14 h-14 bg-serva-green text-white rounded-2xl fab-shadow flex items-center justify-center active:scale-95 transition-transform"
-        style={{ bottom: "calc(64px + env(safe-area-inset-bottom, 0px) + 16px)", right: "16px" }}
-        aria-label="Nueva cotización"
-      >
-        <Plus size={26} strokeWidth={2.5} />
-      </button>
+      {/* ── FAB móvil (solo en vistas de cotizaciones) ─────── */}
+      {view !== "clientes" && (
+        <button
+          onClick={() => setModalCreate(true)}
+          className="sm:hidden fixed z-40 w-14 h-14 bg-serva-green text-white rounded-2xl fab-shadow flex items-center justify-center active:scale-95 transition-transform"
+          style={{ bottom: "calc(64px + env(safe-area-inset-bottom, 0px) + 16px)", right: "16px" }}
+          aria-label="Nueva cotización"
+        >
+          <Plus size={26} strokeWidth={2.5} />
+        </button>
+      )}
 
-      {/* ── Botón desktop ─────────────────────────────── */}
-      <button
-        onClick={() => setModalCreate(true)}
-        className="hidden sm:flex fixed bottom-6 right-6 z-40 items-center gap-2 px-5 py-3 bg-serva-green text-white rounded-xl font-bold text-sm shadow-lg hover:bg-serva-green-dark transition-colors fab-shadow"
-      >
-        <Plus size={18} />
-        Nueva cotización
-      </button>
+      {/* ── Botón desktop (solo en vistas de cotizaciones) ──── */}
+      {view !== "clientes" && (
+        <button
+          onClick={() => setModalCreate(true)}
+          className="hidden sm:flex fixed bottom-6 right-6 z-40 items-center gap-2 px-5 py-3 bg-serva-green text-white rounded-xl font-bold text-sm shadow-lg hover:bg-serva-green-dark transition-colors fab-shadow"
+        >
+          <Plus size={18} />
+          Nueva cotización
+        </button>
+      )}
 
       {/* ── Modales ───────────────────────────────────── */}
       <Modal isOpen={modalCreate} onClose={() => setModalCreate(false)} title="Nueva Cotización" size="xl">
